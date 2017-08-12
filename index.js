@@ -52,11 +52,11 @@ module.exports = function commonShake (b, opts) {
   function remove (string, node) {
     if (node.type === 'AssignmentExpression') {
       string.overwrite(node.start, node.right.start,
-        `/* common-shake removed: ${safeComment(node.left.getSource())} = */ ` +
+        commentify(`${node.left.getSource()} =`) +
         // Make sure we can't accidentally continue a previous statement.
         // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
         // did not have a semicolon. By putting `void ` in front we force a new statement.
-        (node.parent.type === 'ExpressionStatement' ? 'void ' : '')
+        (node.parent.type === 'ExpressionStatement' ? ' void ' : ' ')
       )
       return
     } else if (node.type === 'Property') {
@@ -64,13 +64,15 @@ module.exports = function commonShake (b, opts) {
       // where `a` and `b` are unused. Else we would end up with `{,, c}`.
       const match = string.original.slice(node.end).match(/^\s*,/)
       if (match) {
-        string.overwrite(node.start, node.end + match[0].length,
-          `/* common-shake removed: ${safeComment(node.getSource())} */`
-        )
+        string.overwrite(node.start, node.end + match[0].length, commentify(node.getSource()))
         return
       }
     }
-    node.edit.update(`/* common-shake removed: ${safeComment(node.getSource())} */`)
+    node.edit.update(commentify(node.getSource()))
+  }
+
+  function commentify (str) {
+    return `/* common-shake removed: ${safeComment(str)} */`
   }
 
   function safeComment (str) {
