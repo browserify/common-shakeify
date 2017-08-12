@@ -58,9 +58,19 @@ module.exports = function commonShake (b, opts) {
         // did not have a semicolon. By putting `void ` in front we force a new statement.
         (node.parent.type === 'ExpressionStatement' ? 'void ' : '')
       )
-    } else {
-      node.edit.update(`/* common-shake removed: ${safeComment(node.getSource())} */`)
+      return
+    } else if (node.type === 'Property') {
+      // We may have to also overwrite a comma here, eg in `module.exports = {a, b, c}`
+      // where `a` and `b` are unused. Else we would end up with `{,, c}`.
+      const match = string.original.slice(node.end).match(/^\s*,/)
+      if (match) {
+        string.overwrite(node.start, node.end + match[0].length,
+          `/* common-shake removed: ${safeComment(node.getSource())} */`
+        )
+        return
+      }
     }
+    node.edit.update(`/* common-shake removed: ${safeComment(node.getSource())} */`)
   }
 
   function safeComment (str) {

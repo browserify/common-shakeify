@@ -10,7 +10,7 @@ module.exports = {
 
 },{"./a":1,"./b":3}],3:[function(require,module,exports){
 module.exports = {
-  /* common-shake removed: a: 1 */,
+  /* common-shake removed: a: 1 */
   b: 2, // only this should be kept
   /* common-shake removed: c: 3 */
 }
