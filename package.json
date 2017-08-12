@@ -1,0 +1,35 @@
+{
+  "name": "common-shakeify",
+  "version": "0.0.0",
+  "description": "browserify tree shaking plugin using @indutny common-shake",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goto-bus-stop/common-shakeify.git"
+  },
+  "keywords": [
+    "browserify",
+    "common-shake",
+    "tree-shaking"
+  ],
+  "author": "Renée Kooi <renee@kooi.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/goto-bus-stop/common-shakeify/issues"
+  },
+  "homepage": "https://github.com/goto-bus-stop/common-shakeify#readme",
+  "dependencies": {
+    "acorn": "^5.1.1",
+    "common-shake": "^2.0.2",
+    "magic-string": "^0.22.4",
+    "through2": "^2.0.3"
+  },
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "concat-stream": "^1.6.0",
+    "tape": "^4.8.0"
+  }
+}
