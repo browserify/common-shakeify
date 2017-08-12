@@ -4,7 +4,8 @@ const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
   opts = Object.assign({
-    onGlobalBailout() {}
+    onModuleBailout () {},
+    onGlobalBailout () {}
   }, opts)
 
   const analyzer = new Analyzer()
@@ -39,7 +40,6 @@ module.exports = function commonShake (b, opts) {
   function onend (next) {
     if (!analyzer.isSuccess()) {
       opts.onGlobalBailout(analyzer.bailouts)
-      console.log('bailout', analyzer.bailouts)
 
       rows.forEach((row) => {
         this.push(row)
@@ -51,6 +51,13 @@ module.exports = function commonShake (b, opts) {
     analyzer.modules.forEach((module, key) => {
       const string = strings.get(key)
       const row = rows.get(key)
+
+      if (module.bailouts) {
+        opts.onModuleBailout(module, module.bailouts)
+        this.push(row)
+        return
+      }
+
       module.getDeclarations().forEach((decl) => {
         if (!module.isUsed(decl.name)) {
           remove(string, decl.ast)
