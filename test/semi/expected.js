@@ -5,7 +5,10 @@ require('./test').a('ok')
 exports.a = alert
 // this should be removed, but should not change the meaning of the syntax
 // (not turn it into `exports.a = alert('')`)
-/* common-shake removed: exports.b = 0 */;
+/* common-shake removed: exports.b = */ void 0;
 ('oops')
+
+exports.a = alert
+/* common-shake removed: exports.c = */ void ['oops']
 
 },{}]},{},[1]);

@@ -38,7 +38,7 @@ module.exports = function commonShake (b, opts) {
       const row = rows.get(key)
       module.getDeclarations().forEach((decl) => {
         if (!module.isUsed(decl.name)) {
-          remove(decl.ast)
+          remove(string, decl.ast)
         }
       })
 
@@ -49,15 +49,14 @@ module.exports = function commonShake (b, opts) {
     next()
   }
 
-  function remove (node) {
+  function remove (string, node) {
     if (node.type === 'AssignmentExpression') {
-      node.edit.update(
+      string.overwrite(node.start, node.right.start,
         `/* common-shake removed: ${safeComment(node.left.getSource())} = */ ` +
         // Make sure we can't accidentally continue a previous statement.
         // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
         // did not have a semicolon. By putting `void ` in front we force a new statement.
-        (node.parent.type === 'ExpressionStatement' ? 'void ' : '') +
-        node.right.getSource()
+        (node.parent.type === 'ExpressionStatement' ? 'void ' : '')
       )
     } else {
       node.edit.update(`/* common-shake removed: ${safeComment(node.getSource())} */`)
