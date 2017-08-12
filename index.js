@@ -4,6 +4,7 @@ const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
   opts = Object.assign({
+    onExportDelete () {},
     onModuleBailout () {},
     onGlobalBailout () {}
   }, opts)
@@ -60,6 +61,7 @@ module.exports = function commonShake (b, opts) {
 
       module.getDeclarations().forEach((decl) => {
         if (!module.isUsed(decl.name)) {
+          opts.onExportDelete(row.sourceFile || row.file, decl.name)
           remove(string, decl.ast)
         }
       })
