@@ -22,10 +22,9 @@
   },
   "homepage": "https://github.com/goto-bus-stop/common-shakeify#readme",
   "dependencies": {
-    "acorn": "^5.1.1",
     "common-shake": "^2.0.2",
-    "magic-string": "^0.22.4",
-    "through2": "^2.0.3"
+    "through2": "^2.0.3",
+    "transform-ast": "^2.1.0"
   },
   "devDependencies": {
     "browserify": "^14.4.0",

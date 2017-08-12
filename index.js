@@ -1,6 +1,5 @@
 const Analyzer = require('common-shake').Analyzer
-const MagicString = require('magic-string')
-const parse = require('acorn').parse
+const transformAst = require('transform-ast')
 const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
@@ -13,7 +12,10 @@ module.exports = function commonShake (b, opts) {
 
   function onfile (row, enc, next) {
     const file = row.id
-    const ast = parse(row.source, { locations: true })
+    let ast
+    const string = transformAst(row.source, { locations: true }, (node) => {
+      if (node.type === 'Program') ast = node
+    })
     analyzer.run(ast, file)
 
     Object.keys(row.deps).forEach((name) => {
@@ -25,7 +27,7 @@ module.exports = function commonShake (b, opts) {
     }
 
     rows.set(file, row)
-    strings.set(file, new MagicString(row.source))
+    strings.set(file, string)
 
     next()
   }
@@ -36,7 +38,7 @@ module.exports = function commonShake (b, opts) {
       const row = rows.get(key)
       module.getDeclarations().forEach((decl) => {
         if (!module.isUsed(decl.name)) {
-          remove(string, decl.ast)
+          remove(decl.ast)
         }
       })
 
@@ -47,9 +49,19 @@ module.exports = function commonShake (b, opts) {
     next()
   }
 
-  function remove (string, node) {
-    const orig = string.slice(node.start, node.end)
-    string.overwrite(node.start, node.end, '/* common-shake removed: ' + safeComment(orig) + ' */')
+  function remove (node) {
+    if (node.type === 'AssignmentExpression') {
+      node.edit.update(
+        `/* common-shake removed: ${safeComment(node.left.getSource())} = */ ` +
+        // Make sure we can't accidentally continue a previous statement.
+        // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
+        // did not have a semicolon. By putting `void ` in front we force a new statement.
+        (node.parent.type === 'ExpressionStatement' ? 'void ' : '') +
+        node.right.getSource()
+      )
+    } else {
+      node.edit.update(`/* common-shake removed: ${safeComment(node.getSource())} */`)
+    }
   }
 
   function safeComment (str) {
