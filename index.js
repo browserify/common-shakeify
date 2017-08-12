@@ -3,6 +3,10 @@ const transformAst = require('transform-ast')
 const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
+  opts = Object.assign({
+    onGlobalBailout() {}
+  }, opts)
+
   const analyzer = new Analyzer()
 
   b.pipeline.get('label').unshift(through.obj(onfile, onend))
@@ -33,6 +37,17 @@ module.exports = function commonShake (b, opts) {
   }
 
   function onend (next) {
+    if (!analyzer.isSuccess()) {
+      opts.onGlobalBailout(analyzer.bailouts)
+      console.log('bailout', analyzer.bailouts)
+
+      rows.forEach((row) => {
+        this.push(row)
+      })
+      next()
+      return
+    }
+
     analyzer.modules.forEach((module, key) => {
       const string = strings.get(key)
       const row = rows.get(key)

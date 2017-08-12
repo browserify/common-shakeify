@@ -20,15 +20,14 @@ tests.forEach(function (name) {
 function runTest (t, name) {
   t.plan(1)
   var basedir = path.join(__dirname, name)
-  var optionsPath = path.join(basedir, 'options.json')
+  var optionsPath = path.join(basedir, 'options.js')
   var options = {}
-  try { options = JSON.parse(fs.readFileSync(optionsPath, 'utf8')) } catch (err) {}
+  try { options = require(optionsPath)(t) } catch (err) {}
   var entry = path.join(basedir, 'app.js')
   var expected = path.join(basedir, 'expected.js')
   var actual = path.join(basedir, 'actual.js')
-  options.entries = entry
-  var bundle = browserify(options)
-    .plugin(commonShake)
+  var bundle = browserify({ entries: entry })
+    .plugin(commonShake, options)
     .bundle()
     .on('error', t.fail)
 
