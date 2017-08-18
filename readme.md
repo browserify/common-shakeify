@@ -1,6 +1,6 @@
 # common-shakeify
 
-browserify tree shaking plugin using @indutny's [common-shake](https://github.com/indutny/common-shake)
+browserify tree shaking plugin using [@indutny](https://github.com/indutny)'s [common-shake](https://github.com/indutny/common-shake)
 
 ## Install
 
