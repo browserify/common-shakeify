@@ -100,6 +100,6 @@ module.exports = function commonShake (b, opts) {
   }
 
   function safeComment (str) {
-    return str.replace(/\*\//g, '*\/')
+    return str.replace(/\*\//g, '*\\/')
   }
 }
