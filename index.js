@@ -1,13 +1,35 @@
 'use strict'
+const relative = require('path').relative
 const Analyzer = require('common-shake').Analyzer
 const transformAst = require('transform-ast')
 const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
+  const basedir = b._options.basedir || process.cwd()
+  const seen = {}
   opts = Object.assign({
-    onExportDelete () {},
-    onModuleBailout () {},
-    onGlobalBailout () {}
+    verbose: false,
+    onExportDelete (path, name) {
+      if (opts.verbose || opts.v) {
+        console.warn('common-shake: removed', `\`${name}\``, 'in', relative(basedir, path))
+      }
+    },
+    onModuleBailout (resource, reasons) {
+      if (opts.verbose || opts.v) {
+        reasons.forEach((reason) => {
+          if (seen[resource.resource + reason.reason]) return
+          seen[resource.resource + reason.reason] = true
+          console.warn('common-shake:', reason.reason, 'in', relative(basedir, resource.resource))
+        })
+      }
+    },
+    onGlobalBailout (reasons) {
+      if (opts.verbose || opts.v) {
+        reasons.forEach((reason) => {
+          console.warn('common-shake:', reason.reason, 'in', relative(basedir, reason.source))
+        })
+      }
+    }
   }, opts)
 
   const analyzer = new Analyzer()
