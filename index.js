@@ -1,3 +1,4 @@
+'use strict'
 const Analyzer = require('common-shake').Analyzer
 const transformAst = require('transform-ast')
 const through = require('through2')
