@@ -28,7 +28,17 @@ browserify({ entries: '/my/app.js' })
 
 ## Options
 
-With the Node API, some options can be passed:
+### `verbose`, `v`
+
+When true, print messages to stderr when exports are deleted, or the tree-shaker bails out on a module.
+Default false.
+The `verbose` flag only works when no custom handlers are passed, so if you're using eg. a custom `onExportDelete` you have to print these messages manually.
+
+```bash
+$ browserify -p [ common-shakeify -v ] app.js > bundle.js
+common-shake: removed `decode` in node_modules/vlq/dist/vlq.js
+common-shake: `module.exports` assignment in node_modules/process-nextick-args/index.js
+```
 
 ### `onExportDelete(filename, exportName)`
 
