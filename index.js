@@ -19,14 +19,16 @@ module.exports = function commonShake (b, opts) {
         reasons.forEach((reason) => {
           if (seen[resource.resource + reason.reason]) return
           seen[resource.resource + reason.reason] = true
-          console.warn('common-shake:', reason.reason, 'in', relative(basedir, resource.resource))
+          const loc = reason.loc.start
+          console.warn('common-shake: bailed out: ', reason.reason, 'in', `${relative(basedir, resource.resource)}:${loc.line}:${loc.column}`)
         })
       }
     },
     onGlobalBailout (reasons) {
       if (opts.verbose || opts.v) {
         reasons.forEach((reason) => {
-          console.warn('common-shake:', reason.reason, 'in', relative(basedir, reason.source))
+          const loc = reason.loc.start
+          console.warn('common-shake: GLOBAL BAILOUT:', reason.reason, 'in', `${relative(basedir, resource.resource)}:${loc.line}:${loc.column}`)
         })
       }
     }

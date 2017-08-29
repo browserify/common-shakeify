@@ -2,6 +2,8 @@
 
 browserify tree shaking plugin using [@indutny](https://github.com/indutny)'s [common-shake](https://github.com/indutny/common-shake)
 
+Removes unused exports from CommonJS modules.
+
 ## Install
 
 ```bash
@@ -36,8 +38,8 @@ The `verbose` flag only works when no custom handlers are passed, so if you're u
 
 ```bash
 $ browserify -p [ common-shakeify -v ] app.js > bundle.js
-common-shake: removed `decode` in node_modules/vlq/dist/vlq.js
-common-shake: `module.exports` assignment in node_modules/process-nextick-args/index.js
+common-shake: module bailout: removed `decode` in node_modules/vlq/dist/vlq.js:10:7
+common-shake: module bailout: `module.exports` assignment in node_modules/process-nextick-args/index.js:20:3
 ```
 
 ### `onExportDelete(filename, exportName)`
