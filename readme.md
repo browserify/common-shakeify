@@ -2,7 +2,8 @@
 
 browserify tree shaking plugin using [@indutny](https://github.com/indutny)'s [common-shake](https://github.com/indutny/common-shake)
 
-Removes unused exports from CommonJS modules.
+Comments out unused exports from CommonJS modules.
+Use a minifier on the output to remove the exports entirely.
 
 ## Install
 
@@ -15,7 +16,9 @@ npm install --save-dev common-shakeify
 With the browserify cli:
 
 ```bash
-browserify -p common-shakeify /my/app.js
+browserify -p common-shakeify /my/app.js > bundle.js
+# Minify
+uglify-js bundle.js --compress > bundle.min.js
 ```
 
 With the browserify Node API:
@@ -23,9 +26,16 @@ With the browserify Node API:
 ```js
 var commonShake = require('common-shakeify')
 
-browserify({ entries: '/my/app.js' })
+var b = browserify({ entries: '/my/app.js' })
   .plugin(commonShake, { /* options */ })
   .bundle()
+
+// Minify & save
+var concat = require('concat-stream')
+var uglify = require('uglify-js')
+b.pipe(concat(function (source) {
+  fs.writeFileSync('bundle.min.js', uglify.minify(source.toString(), { compress: true }).code)
+}))
 ```
 
 ## Options
@@ -38,8 +48,8 @@ The `verbose` flag only works when no custom handlers are passed, so if you're u
 
 ```bash
 $ browserify -p [ common-shakeify -v ] app.js > bundle.js
-common-shake: module bailout: removed `decode` in node_modules/vlq/dist/vlq.js:10:7
-common-shake: module bailout: `module.exports` assignment in node_modules/process-nextick-args/index.js:20:3
+common-shake: removed `decode` in node_modules/vlq/dist/vlq.js:10:7
+common-shake: bailed out: `module.exports` assignment in node_modules/process-nextick-args/index.js:20:3
 ```
 
 ### `onExportDelete(filename, exportName)`

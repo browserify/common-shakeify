@@ -29,6 +29,7 @@
   "devDependencies": {
     "browserify": "^14.4.0",
     "concat-stream": "^1.6.0",
-    "tape": "^4.8.0"
+    "tape": "^4.8.0",
+    "uglify-js": "^3.0.28"
   }
 }
