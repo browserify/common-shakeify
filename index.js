@@ -2,6 +2,7 @@
 const relative = require('path').relative
 const Analyzer = require('common-shake').Analyzer
 const transformAst = require('transform-ast')
+const wrapComment = require('wrap-comment')
 const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
@@ -121,10 +122,6 @@ module.exports = function commonShake (b, opts) {
   }
 
   function commentify (str) {
-    return `/* common-shake removed: ${safeComment(str)} */`
-  }
-
-  function safeComment (str) {
-    return str.replace(/\*\//g, '*\\/')
+    return wrapComment(`common-shake removed: ${str}`)
   }
 }
