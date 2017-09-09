@@ -6,6 +6,10 @@ const wrapComment = require('wrap-comment')
 const through = require('through2')
 
 module.exports = function commonShake (b, opts) {
+  if (typeof b !== 'object') {
+    throw new Error('common-shakeify: must be used as a plugin, not a transform')
+  }
+
   const basedir = b._options.basedir || process.cwd()
   const seen = {}
   opts = Object.assign({
