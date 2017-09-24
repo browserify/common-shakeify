@@ -5,6 +5,8 @@ const transformAst = require('transform-ast')
 const wrapComment = require('wrap-comment')
 const through = require('through2')
 
+const kDuplicates = Symbol('duplicates')
+
 module.exports = function commonShake (b, opts) {
   if (typeof b !== 'object') {
     throw new Error('common-shakeify: must be used as a plugin, not a transform')
@@ -48,8 +50,25 @@ module.exports = function commonShake (b, opts) {
 
   function onfile (row, enc, next) {
     const file = row.id
+    let source = row.source
+
+    if (row.dedupe) {
+      // For modules that were deduped, attach the duplicates to the original row,
+      // and pass the original source to the analyzer.
+      // Later on, we'll merge the used declarations together, so everything still
+      // works if dependencies of different copies of the deduped module use
+      // different parts of that module.
+      const deduped = rows.get(row.dedupe) || rows.get(row.dedupeIndex)
+      if (deduped) {
+        addDuplicate(deduped, row)
+        source = deduped.source
+      } else {
+        return next(new Error(`Could not redupe module ${row.file}`))
+      }
+    }
+
     let ast
-    const string = transformAst(row.source, { locations: true }, (node) => {
+    const string = transformAst(source, { locations: true }, (node) => {
       if (node.type === 'Program') ast = node
     })
     analyzer.run(ast, file)
@@ -82,6 +101,14 @@ module.exports = function commonShake (b, opts) {
     analyzer.modules.forEach((module, key) => {
       const string = strings.get(key)
       const row = rows.get(key)
+      const dupes = getDuplicates(row)
+
+      // If this module was a duplicate of another module,
+      // the original module will have been rewritten already.
+      if (row.dedupe) {
+        this.push(row)
+        return
+      }
 
       if (module.bailouts) {
         opts.onModuleBailout(module, module.bailouts)
@@ -90,14 +117,30 @@ module.exports = function commonShake (b, opts) {
       }
 
       module.getDeclarations().forEach((decl) => {
-        if (!module.isUsed(decl.name)) {
+        if (!isUsed(decl.name)) {
           opts.onExportDelete(row.sourceFile || row.file, decl.name)
           remove(string, decl.ast)
         }
       })
 
       row.source = string.toString()
+
       this.push(row)
+
+      // Check if a name was used in this module, or
+      // in any of this module's deduped versions.
+      function isUsed (name) {
+        if (module.isUsed(name)) {
+          return true
+        }
+        if (dupes.length > 0) {
+          return dupes.some((dupe) => {
+            const m = analyzer.modules.get(dupe.file)
+            return m && m.isUsed(name)
+          })
+        }
+        return false
+      }
     })
 
     next()
@@ -140,4 +183,14 @@ module.exports = function commonShake (b, opts) {
   function commentify (str) {
     return wrapComment(`common-shake removed: ${str}`)
   }
+}
+
+function addDuplicate (row, dupe) {
+  if (!row[kDuplicates]) {
+    row[kDuplicates] = []
+  }
+  row[kDuplicates].push(dupe)
+}
+function getDuplicates (row) {
+  return row[kDuplicates] || []
 }
