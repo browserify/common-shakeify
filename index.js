@@ -105,13 +105,25 @@ module.exports = function commonShake (b, opts) {
 
   function remove (string, node) {
     if (node.type === 'AssignmentExpression') {
-      string.overwrite(node.start, node.right.start,
-        commentify(`${node.left.getSource()} =`) +
-        // Make sure we can't accidentally continue a previous statement.
-        // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
-        // did not have a semicolon. By putting `void ` in front we force a new statement.
-        (node.parent.type === 'ExpressionStatement' ? ' void ' : ' ')
-      )
+      var prefix = commentify(`${node.left.getSource()} =`) + ' '
+      // Make sure we can't accidentally continue a previous statement.
+      // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
+      // did not have a semicolon. By putting `void ` in front we force a new statement.
+      if (node.parent.type === 'ExpressionStatement') {
+        prefix += 'void '
+      }
+      // Anonymous function and class expressions are parsed as statements if they
+      // are the first thing in a statement, which can happen if the `exports.xyz`
+      // assignment happened inside a SequenceExpression (usually after minification).
+      // eg: `exports.a=function(){},exports.b=function(){}`
+      // Here if `exports.a` is removed we need to make sure the `function(){}` is still
+      // an expression, by prepending `void 0,` to result in:
+      // `void 0,function(){},exports.b=function(){}`
+      var isPossiblyAmbiguousExpression = node.right.type === 'FunctionExpression' || node.right.type === 'ClassExpression'
+      if (isPossiblyAmbiguousExpression && node.parent.type === 'SequenceExpression') {
+        prefix += 'void 0, '
+      }
+      string.overwrite(node.start, node.right.start, prefix)
       return
     } else if (node.type === 'Property') {
       // We may have to also overwrite a comma here, eg in `module.exports = {a, b, c}`
