@@ -2,6 +2,8 @@
 const relative = require('path').relative
 const Analyzer = require('common-shake').Analyzer
 const transformAst = require('transform-ast')
+const convertSourceMap = require('convert-source-map')
+const mergeSourceMap = require('merge-source-map')
 const wrapComment = require('wrap-comment')
 const through = require('through2')
 
@@ -67,6 +69,8 @@ module.exports = function commonShake (b, opts) {
       }
     }
 
+    source = convertSourceMap.removeComments(source)
+
     let ast
     const string = transformAst(source, { locations: true }, (node) => {
       if (node.type === 'Program') ast = node
@@ -123,7 +127,24 @@ module.exports = function commonShake (b, opts) {
         }
       })
 
-      row.source = string.toString()
+      const transformed = string.toString()
+      if (b._options.debug) {
+        const inputMap = convertSourceMap.fromSource(row.source)
+        let sourceMap = string.generateMap({
+          hires: !!inputMap,
+          source: row.sourceFile || row.file
+        })
+        if (inputMap) {
+          if (transformed === string.original) {
+            sourceMap = inputMap.toObject()
+          } else {
+            sourceMap = mergeSourceMap(inputMap.toObject(), sourceMap)
+          }
+        }
+        row.source = transformed + '\n' + convertSourceMap.fromObject(sourceMap).toComment()
+      } else {
+        row.source = transformed
+      }
 
       this.push(row)
 
