@@ -4,6 +4,7 @@ const Analyzer = require('common-shake').Analyzer
 const transformAst = require('transform-ast')
 const wrapComment = require('wrap-comment')
 const through = require('through2')
+const convertSourceMap = require('convert-source-map')
 
 const kDuplicates = Symbol('duplicates')
 
@@ -123,7 +124,12 @@ module.exports = function commonShake (b, opts) {
         }
       })
 
-      row.source = string.toString()
+      const transformed = string.toString()
+      if (b._options.debug) {
+        row.source = transformed + '\n' + convertSourceMap.fromObject(string.map).toComment()
+      } else {
+        row.source = transformed
+      }
 
       this.push(row)
 
