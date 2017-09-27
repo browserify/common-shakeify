@@ -67,7 +67,8 @@ test('simple', function (t) {
 test('source maps', function (t) {
   var b = browserify({
     entries: path.join(__dirname, 'source-map/app.js'),
-    debug: true
+    debug: true,
+    preludePath: 'node_modules/browser-pack/_prelude.js'
   })
   b.transform('babelify', {
     plugins: [
