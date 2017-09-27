@@ -6,17 +6,6 @@ var browserify = require('browserify')
 var concat = require('concat-stream')
 var commonShake = require('../')
 
-var tests = fs.readdirSync(__dirname).filter(function (name) {
-  return fs.statSync(path.join(__dirname, name)).isDirectory() &&
-    fs.existsSync(path.join(__dirname, name, 'app.js'))
-})
-
-tests.forEach(function (name) {
-  test(name, function (t) {
-    runTest(t, name)
-  })
-})
-
 function runTest (t, name) {
   t.plan(1)
   var basedir = path.join(__dirname, name)
@@ -43,3 +32,64 @@ function runTest (t, name) {
     t.end()
   }))
 }
+
+test('comment', function (t) {
+  runTest(t, 'comment')
+})
+test('dedupe', function (t) {
+  runTest(t, 'dedupe')
+})
+test('export-delete', function (t) {
+  runTest(t, 'export-delete')
+})
+test('funny-exports', function (t) {
+  runTest(t, 'funny-exports')
+})
+test('global-bailout', function (t) {
+  runTest(t, 'global-bailout')
+})
+test('module-bailout', function (t) {
+  runTest(t, 'module-bailout')
+})
+test('module-exports', function (t) {
+  runTest(t, 'module-exports')
+})
+test('multiple-assign', function (t) {
+  runTest(t, 'multiple-assign')
+})
+test('semi', function (t) {
+  runTest(t, 'semi')
+})
+test('simple', function (t) {
+  runTest(t, 'simple')
+})
+
+test('source maps', function (t) {
+  var b = browserify({
+    entries: path.join(__dirname, 'source-map/app.js'),
+    debug: true
+  })
+  b.transform('babelify', {
+    plugins: [
+      'transform-es2015-modules-commonjs'
+    ]
+  })
+  b.plugin(commonShake)
+
+  var bundle = b.bundle()
+  bundle.on('error', t.fail)
+
+  // Write actual output to a file for easier inspection
+  bundle.pipe(fs.createWriteStream(
+    path.join(__dirname, 'source-map/actual.js')
+  ))
+
+  bundle.pipe(concat(function (result) {
+    t.is(
+      result.toString('utf8'),
+      fs.readFileSync(path.join(__dirname, 'source-map/expected.js'), 'utf8'),
+      'source maps'
+    )
+    t.end()
+  }))
+})

@@ -23,11 +23,15 @@
   "homepage": "https://github.com/goto-bus-stop/common-shakeify#readme",
   "dependencies": {
     "common-shake": "^2.0.2",
+    "convert-source-map": "^1.5.0",
+    "merge-source-map": "^1.0.4",
     "through2": "^2.0.3",
     "transform-ast": "^2.1.0",
     "wrap-comment": "^1.0.0"
   },
   "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babelify": "^7.3.0",
     "browserify": "^14.4.0",
     "concat-stream": "^1.6.0",
     "tape": "^4.8.0",
