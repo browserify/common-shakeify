@@ -3,6 +3,31 @@
 browserify tree shaking plugin using [@indutny](https://github.com/indutny)'s [common-shake](https://github.com/indutny/common-shake)
 
 Comments out unused exports from CommonJS modules.
+
+With input files:
+
+```js
+// math.js
+exports.min = function (a, b) { return a < b ? a : b }
+exports.max = function (a, b) { return a < b ? b : a }
+
+// app.js
+var math = require('./math')
+console.log(math.max(10, 20))
+```
+
+This plugin will rewrite the files to:
+
+```js
+// math.js
+/* common-shake removed: exports.min = */ void function (a, b) { return a < b ? a : b }
+exports.max = function (a, b) { return a < b ? b : a }
+
+// app.js
+var math = require('./math')
+console.log(math.max(10, 20))
+```
+
 Use a minifier on the output to remove the exports entirely.
 
 ## Install
@@ -31,12 +56,14 @@ var b = browserify({ entries: '/my/app.js' })
   .bundle()
 
 // Minify & save
-var concat = require('concat-stream')
-var uglify = require('uglify-js')
-b.pipe(concat(function (source) {
-  fs.writeFileSync('bundle.min.js', uglify.minify(source.toString(), { compress: true }).code)
-}))
+var uglify = require('minify-stream')
+b
+  .pipe(uglify())
+  .pipe(fs.createWriteStream('bundle.min.js'))
 ```
+
+Note that using a minifier transform like uglifyify doesn't eliminate the commented-out exports.
+Transforms run _before_ common-shakeify, so you have to use a minifier on the final bundle to remove the unused exports.
 
 ## Options
 
