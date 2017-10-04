@@ -42,12 +42,22 @@ module.exports = function commonShake (b, opts) {
     }
   }, opts)
 
-  const analyzer = new Analyzer()
+  opts.sourceMap = !!b._options.debug
 
-  b.pipeline.get('label').unshift(through.obj(onfile, onend))
+  addHooks()
+  b.on('reset', addHooks)
+  function addHooks () {
+    b.pipeline.get('label').unshift(createStream(opts))
+  }
+}
+
+function createStream (opts) {
+  const analyzer = new Analyzer()
 
   const rows = new Map()
   const strings = new Map()
+
+  return through.obj(onfile, onend)
 
   function onfile (row, enc, next) {
     const file = row.id
@@ -125,7 +135,7 @@ module.exports = function commonShake (b, opts) {
       })
 
       const transformed = string.toString()
-      if (b._options.debug) {
+      if (opts.sourceMap) {
         row.source = transformed + '\n' + convertSourceMap.fromObject(string.map).toComment()
       } else {
         row.source = transformed
