@@ -28,7 +28,8 @@ module.exports = function commonShake (b, opts) {
           if (seen[resource.resource + reason.reason]) return
           seen[resource.resource + reason.reason] = true
           const loc = reason.loc.start
-          console.warn('common-shake: bailed out: ', reason.reason, 'in', `${relative(basedir, resource.resource)}:${loc.line}:${loc.column}`)
+          const source = reason.source || resource.resource
+          console.warn('common-shake: bailed out: ', reason.reason, 'in', `${relative(basedir, source)}:${loc.line}:${loc.column}`)
         })
       }
     },
