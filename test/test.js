@@ -64,6 +64,19 @@ test('simple', function (t) {
   runTest(t, 'simple')
 })
 
+test('external', function (t) {
+  var b = browserify({
+    entries: path.join(__dirname, 'external/app.js')
+  })
+
+  b.external('xyz')
+
+  b.bundle(function (err, bundle) {
+    t.ifError(err)
+    t.end()
+  })
+})
+
 test('source maps', function (t) {
   var b = browserify({
     entries: path.join(__dirname, 'source-map/app.js'),

@@ -85,7 +85,9 @@ function createStream (opts) {
     analyzer.run(ast, file)
 
     Object.keys(row.deps).forEach((name) => {
-      analyzer.resolve(file, name, row.deps[name])
+      if (row.deps[name]) {
+        analyzer.resolve(file, name, row.deps[name])
+      }
     })
 
     if (row.entry) {
