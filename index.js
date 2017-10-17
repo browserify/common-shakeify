@@ -182,7 +182,9 @@ function createStream (opts) {
       if (isPossiblyAmbiguousExpression && node.parent.type === 'SequenceExpression' ||
           // without this, `exports.a = exports.b = xyz` eliminating exports.a becomes `void exports.b = xyz`
           // which is invalid.
-          node.right.type === 'AssignmentExpression') {
+          node.right.type === 'AssignmentExpression' ||
+          // Don't output a statement containing only `void () => {}`
+          node.right.type === 'ArrowFunctionExpression') {
         prefix += 'void 0, '
       }
       // Make sure we can't accidentally continue a previous statement.

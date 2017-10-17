@@ -5,6 +5,7 @@ require('./funny').e
 
 },{"./funny":2}],2:[function(require,module,exports){
 exports.exports = function () {}
+/* common-shake removed: exports.other = */ void 0, () => { console.log('other') }
 
 console.log(/* common-shake removed: exports.a = */ 'hello world')
 function a() {} /* common-shake removed: exports.b = */ void 0, function () { return a }, console.log(a)
