@@ -80,7 +80,10 @@ function createStream (opts) {
     }
 
     let ast
-    const string = transformAst(source, { locations: true }, (node) => {
+    const string = transformAst(source, {
+      locations: true,
+      ecmaVersion: 9
+    }, (node) => {
       if (node.type === 'Program') ast = node
     })
     analyzer.run(ast, file)
