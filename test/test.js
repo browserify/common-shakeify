@@ -107,3 +107,27 @@ test('source maps', function (t) {
     t.end()
   }))
 })
+
+test('dash-r', function (t) {
+  var b = browserify({
+    entries: path.join(__dirname, 'dash-r/app.js')
+  })
+  b.require(path.join(__dirname, 'dash-r/expose.js'), { expose: 'whatever' })
+  b.plugin(commonShake)
+
+  var bundle = b.bundle()
+  bundle.on('error', t.fail)
+
+  bundle.pipe(fs.createWriteStream(
+    path.join(__dirname, 'dash-r/actual.js')
+  ))
+
+  bundle.pipe(concat(function (result) {
+    t.is(
+      result.toString('utf8'),
+      fs.readFileSync(path.join(__dirname, 'dash-r/expected.js'), 'utf8'),
+      'dash-r'
+    )
+    t.end()
+  }))
+})
