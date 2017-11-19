@@ -37,7 +37,7 @@ module.exports = function commonShake (b, opts) {
       if (opts.verbose || opts.v) {
         reasons.forEach((reason) => {
           const loc = reason.loc.start
-          console.warn('common-shake: GLOBAL BAILOUT:', reason.reason, 'in', `${relative(basedir, resource.resource)}:${loc.line}:${loc.column}`)
+          console.warn('common-shake: GLOBAL BAILOUT:', reason.reason, 'in', `${relative(basedir, reason.source)}:${loc.line}:${loc.column}`)
         })
       }
     }
