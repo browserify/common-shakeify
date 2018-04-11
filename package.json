@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/goto-bus-stop/common-shakeify#readme",
   "dependencies": {
-    "common-shake": "^2.1.0",
+    "@goto-bus-stop/common-shake": "^2.2.0",
     "convert-source-map": "^1.5.1",
     "through2": "^2.0.3",
     "transform-ast": "^2.4.3",

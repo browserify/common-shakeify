@@ -1,6 +1,6 @@
 'use strict'
 const relative = require('path').relative
-const Analyzer = require('common-shake').Analyzer
+const Analyzer = require('@goto-bus-stop/common-shake').Analyzer
 const transformAst = require('transform-ast')
 const wrapComment = require('wrap-comment')
 const through = require('through2')
