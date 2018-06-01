@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/goto-bus-stop/common-shakeify.git"
+    "url": "git+https://github.com/browserify/common-shakeify.git"
   },
   "keywords": [
     "browserify",
@@ -18,9 +18,9 @@
   "author": "Renée Kooi <renee@kooi.me>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/goto-bus-stop/common-shakeify/issues"
+    "url": "https://github.com/browserify/common-shakeify/issues"
   },
-  "homepage": "https://github.com/goto-bus-stop/common-shakeify#readme",
+  "homepage": "https://github.com/browserify/common-shakeify#readme",
   "dependencies": {
     "@goto-bus-stop/common-shake": "^2.2.0",
     "convert-source-map": "^1.5.1",
