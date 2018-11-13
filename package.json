@@ -1,6 +1,6 @@
 {
   "name": "common-shakeify",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "browserify tree shaking plugin using @indutny common-shake",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,11 @@
     "tree-shaking"
   ],
   "author": "Renée Kooi <renee@kooi.me>",
+  "contributors": [
+    "Damian Krzeminski (https://github.com/pirxpilot)",
+    "Seph Gentle (https://github.com/josephg)",
+    "Titus (https://github.com/wooorm)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/browserify/common-shakeify/issues"
