@@ -63,6 +63,9 @@ test('semi', function (t) {
 test('simple', function (t) {
   runTest(t, 'simple')
 })
+test('paren-exports', function (t) {
+  runTest(t, 'paren-exports')
+})
 
 test('external', function (t) {
   var b = browserify({

@@ -194,7 +194,15 @@ function createStream (opts) {
       else if (node.parent.type === 'ExpressionStatement') {
         prefix += 'void '
       }
-      string.overwrite(node.start, node.right.start, prefix)
+
+      // Acorn silently strips parens, and node.right.start might be after one
+      // or more parenthesis that we need to keep. Eg, exports.a = (1+1)
+      if (node.right.end !== node.end) {
+        // Replace entire expression. node.start - node.end will wrap the entire expression.
+        string.overwrite(node.start, node.end, prefix + '(' + node.right.getSource() + ')')
+      } else {
+        string.overwrite(node.start, node.right.start, prefix)
+      }
       return
     } else if (node.type === 'Property') {
       // We may have to also overwrite a comma here, eg in `module.exports = {a, b, c}`
