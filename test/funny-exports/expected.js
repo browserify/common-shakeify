@@ -11,6 +11,6 @@ console.log(/* common-shake removed: exports.a = */ 'hello world')
 function a() {} /* common-shake removed: exports.b = */ void 0, function () { return a }, console.log(a)
 var c = (0, /* common-shake removed: exports.c = */ 'beep boop')
 
-/* common-shake removed: exports.d = */ void 0, exports.e = null
+/* common-shake removed: exports.d = */ exports.e = null
 
 },{}]},{},[1]);
