@@ -25,8 +25,8 @@ function runTest (t, name) {
 
   bundle.pipe(concat(function (result) {
     t.is(
-      result.toString('utf8'),
-      fs.readFileSync(expected, 'utf8'),
+      result.toString('utf8').replace(/\r\n/g, '\n'),
+      fs.readFileSync(expected, 'utf8').replace(/\r\n/g, '\n'),
       name
     )
     t.end()
