@@ -186,7 +186,14 @@ function createStream (opts) {
           node.right.type === 'AssignmentExpression' ||
           // Don't output a statement containing only `void () => {}`
           node.right.type === 'ArrowFunctionExpression') {
-        prefix += 'void 0, '
+        // ignore alias assignment expression `exports.a = exports.b = exports.c`
+        if (!(
+          node.right.type === 'AssignmentExpression' &&
+          node.right.left.type === 'MemberExpression' &&
+          node.right.left.object.name === 'exports'
+        )) {
+          prefix += 'void 0, '
+        }
       }
       // Make sure we can't accidentally continue a previous statement.
       // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
