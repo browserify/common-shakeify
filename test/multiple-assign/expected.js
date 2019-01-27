@@ -5,7 +5,11 @@ exports.a = /* common-shake removed: exports.b = */ /* common-shake removed: exp
 exports.a = 'a'
 /* common-shake removed: exports.b = */ void 'b'
 
+/* common-shake removed: exports.c = */ void 0, /* common-shake removed: exports.d = */ function () {}
+
 },{}],2:[function(require,module,exports){
 console.log(require('./a').a)
+
+var c = require('./a')
 
 },{"./a":1}]},{},[2]);

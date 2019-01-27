@@ -3,3 +3,5 @@ exports.a = exports.b = exports.c = exports.d = null
 
 exports.a = 'a'
 exports.b = 'b'
+
+exports.c = exports.d = function () {}

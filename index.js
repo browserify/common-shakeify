@@ -187,11 +187,14 @@ function createStream (opts) {
           // Don't output a statement containing only `void () => {}`
           node.right.type === 'ArrowFunctionExpression') {
         // ignore alias assignment expression `exports.a = exports.b = exports.c`
+        // unless the last argument is noname function
         if (!(
           node.right.type === 'AssignmentExpression' &&
           node.right.left.type === 'MemberExpression' &&
           node.right.left.object.name === 'exports'
-        )) {
+          ) ||
+          (node.right.right.type === 'FunctionExpression' && !node.right.right.id)
+          ) {
           prefix += 'void 0, '
         }
       }
