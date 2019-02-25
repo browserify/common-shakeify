@@ -10,6 +10,4 @@ exports.a = 'a'
 },{}],2:[function(require,module,exports){
 console.log(require('./a').a)
 
-var c = require('./a')
-
 },{"./a":1}]},{},[2]);
