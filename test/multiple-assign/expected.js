@@ -7,6 +7,13 @@ exports.a = 'a'
 
 /* common-shake removed: exports.c = */ void 0, /* common-shake removed: exports.d = */ function () {}
 
+/* common-shake removed: exports.e = */ /* common-shake removed: exports.f = */ void 0, () => {}
+/* common-shake removed: exports.g = */ void 0, /* common-shake removed: exports.h = */ class {}
+
+// should not leak
+/* common-shake removed: exports.i = */ void 0, /* common-shake removed: exports.j = */ class named {}
+/* common-shake removed: exports.k = */ void 0, /* common-shake removed: exports.l = */ function named3 () {}
+
 },{}],2:[function(require,module,exports){
 console.log(require('./a').a)
 

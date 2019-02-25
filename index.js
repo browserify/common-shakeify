@@ -188,13 +188,10 @@ function createStream (opts) {
           node.right.type === 'ArrowFunctionExpression') {
         // ignore alias assignment expression `exports.a = exports.b = exports.c`
         // unless the last argument is noname function
-        if (!(
-          node.right.type === 'AssignmentExpression' &&
-          node.right.left.type === 'MemberExpression' &&
-          node.right.left.object.name === 'exports'
-          ) ||
-          (node.right.right.type === 'FunctionExpression' && !node.right.right.id)
-          ) {
+        var isAliasAssignment = node.right.type === 'AssignmentExpression' && node.right.left.type === 'MemberExpression' && node.right.left.object.name === 'exports'
+        var isFunction = isAliasAssignment && node.right.right.type === 'FunctionExpression'
+        var isClass = isAliasAssignment && node.right.right.type === 'ClassExpression'
+        if (!isAliasAssignment || isFunction || isClass) {
           prefix += 'void 0, '
         }
       }
