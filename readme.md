@@ -82,7 +82,7 @@ common-shake: bailed out: `module.exports` assignment in node_modules/process-ne
 ### `onExportDelete(filename, exportName)`
 
 Handler called for every exported identifier that is being removed.
-`filename` is the path to the file that exports the identifier. `exportName` is the name of the identifier.
+`filename` is the path to the file that exports the identifier. `exportName` is the name of the identifier. Return false to bail and keep the identifier.
 
 ### `onModuleBailout(module, reasons)`
 
