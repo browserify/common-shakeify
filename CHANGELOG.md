@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.6.0
+* Keep unused properties if `onExportDelete` returns false. ([@RedHatter](https://github.com/RedHatter) in [#26](https://github.com/browserify/common-shakeify/pull/26))
+
 ## 0.5.4
 * Fix export bug with anonymous functions in assignment chains. ([@dy](https://github.com/dy) in [#25](https://github.com/browserify/common-shakeify/pull/25))
 * Fix export bug with anonymous classes in assignment chains. ([#27](https://github.com/browserify/common-shakeify/pull/27))
