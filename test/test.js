@@ -63,6 +63,9 @@ test('semi', function (t) {
 test('simple', function (t) {
   runTest(t, 'simple')
 })
+test('exclude', function (t) {
+  runTest(t, 'exclude')
+})
 test('paren-exports', function (t) {
   runTest(t, 'paren-exports')
 })

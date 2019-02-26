@@ -136,8 +136,9 @@ function createStream (opts) {
 
       module.getDeclarations().forEach((decl) => {
         if (!isUsed(decl.name)) {
-          opts.onExportDelete(row.sourceFile || row.file, decl.name)
-          remove(string, decl.ast)
+          if (opts.onExportDelete(row.sourceFile || row.file, decl.name) !== false) {
+            remove(string, decl.ast)
+          }
         }
       })
 
