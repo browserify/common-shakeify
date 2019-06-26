@@ -61,7 +61,7 @@ function createStream (opts) {
   return through.obj(onfile, onend)
 
   function onfile (row, enc, next) {
-    const file = row.file
+    const file = require.resolve(row.file)
     let source = row.source
 
     if (row.dedupe) {

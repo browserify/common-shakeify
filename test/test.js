@@ -137,3 +137,28 @@ test('dash-r', function (t) {
     t.end()
   }))
 })
+
+test('dash-r node_modules', function (t) {
+  var b = browserify({
+    entries: path.join(__dirname, 'dash-r/app2.js')
+  })
+  // using wrap-comment because it already exists in this repo
+  b.require('wrap-comment', { expose: 'net' })
+  b.plugin(commonShake)
+
+  var bundle = b.bundle()
+  bundle.on('error', t.fail)
+
+  bundle.pipe(fs.createWriteStream(
+    path.join(__dirname, 'dash-r/actual2.js')
+  ))
+
+  bundle.pipe(concat(function (result) {
+    t.is(
+      result.toString('utf8'),
+      fs.readFileSync(path.join(__dirname, 'dash-r/expected2.js'), 'utf8'),
+      'dash-r'
+    )
+    t.end()
+  }))
+})
