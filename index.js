@@ -61,7 +61,7 @@ function createStream (opts) {
   return through.obj(onfile, onend)
 
   function onfile (row, enc, next) {
-    const file = require.resolve(row.file)
+    const index = row.index
     let source = row.source
 
     if (row.dedupe) {
@@ -70,7 +70,7 @@ function createStream (opts) {
       // Later on, we'll merge the used declarations together, so everything still
       // works if dependencies of different copies of the deduped module use
       // different parts of that module.
-      const deduped = rows.get(row.dedupe) || rows.get(row.dedupeIndex)
+      const deduped = rows.get(row.dedupeIndex)
       if (deduped) {
         addDuplicate(deduped, row)
         source = deduped.source
@@ -83,24 +83,24 @@ function createStream (opts) {
     const string = transformAst(source, {
       locations: true,
       ecmaVersion: 9,
-      inputFilename: file
+      inputFilename: row.file
     }, (node) => {
       if (node.type === 'Program') ast = node
     })
-    analyzer.run(ast, file)
+    analyzer.run(ast, index)
 
-    Object.keys(row.deps).forEach((name) => {
-      if (row.deps[name]) {
-        analyzer.resolve(file, name, row.deps[name])
+    Object.keys(row.indexDeps).forEach((name) => {
+      if (row.indexDeps[name]) {
+        analyzer.resolve(index, name, row.indexDeps[name])
       }
     })
 
     if (row.entry) {
-      analyzer.getModule(file).forceExport()
+      analyzer.getModule(index).forceExport()
     }
 
-    rows.set(file, row)
-    strings.set(file, string)
+    rows.set(index, row)
+    strings.set(index, string)
 
     next()
   }
@@ -159,7 +159,7 @@ function createStream (opts) {
         }
         if (dupes.length > 0) {
           return dupes.some((dupe) => {
-            const m = analyzer.modules.get(dupe.file)
+            const m = analyzer.modules.get(dupe.index)
             return m && m.isUsed(name)
           })
         }
