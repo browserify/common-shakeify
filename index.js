@@ -1,6 +1,7 @@
 'use strict'
-const relative = require('path').relative
+const path = require('path')
 const Analyzer = require('@goto-bus-stop/common-shake').Analyzer
+const evaluateConst = require('@goto-bus-stop/common-shake').evaluateConst
 const transformAst = require('transform-ast')
 const wrapComment = require('wrap-comment')
 const through = require('through2')
@@ -17,9 +18,9 @@ module.exports = function commonShake (b, opts) {
   const seen = {}
   opts = Object.assign({
     verbose: false,
-    onExportDelete (path, name) {
+    onExportDelete (source, name) {
       if (opts.verbose || opts.v) {
-        console.warn('common-shake: removed', `\`${name}\``, 'in', relative(basedir, path))
+        console.warn('common-shake: removed', `\`${name}\``, 'in', path.relative(basedir, source))
       }
     },
     onModuleBailout (resource, reasons) {
@@ -29,7 +30,7 @@ module.exports = function commonShake (b, opts) {
           seen[resource.resource + reason.reason] = true
           const loc = reason.loc.start
           const source = reason.source || resource.resource
-          console.warn('common-shake: bailed out: ', reason.reason, 'in', `${relative(basedir, source)}:${loc.line}:${loc.column}`)
+          console.warn('common-shake: bailed out: ', reason.reason, 'in', `${path.relative(basedir, source)}:${loc.line}:${loc.column}`)
         })
       }
     },
@@ -37,7 +38,7 @@ module.exports = function commonShake (b, opts) {
       if (opts.verbose || opts.v) {
         reasons.forEach((reason) => {
           const loc = reason.loc.start
-          console.warn('common-shake: GLOBAL BAILOUT:', reason.reason, 'in', `${relative(basedir, reason.source)}:${loc.line}:${loc.column}`)
+          console.warn('common-shake: GLOBAL BAILOUT:', reason.reason, 'in', `${path.relative(basedir, reason.source)}:${loc.line}:${loc.column}`)
         })
       }
     }
@@ -48,11 +49,29 @@ module.exports = function commonShake (b, opts) {
   addHooks()
   b.on('reset', addHooks)
   function addHooks () {
-    b.pipeline.get('label').unshift(createStream(opts))
+    const packages = new Map()
+    const aliases = new Map()
+    b._mdeps.on('package', (pkg) => {
+      packages.set(pkg.__dirname, pkg)
+    })
+    b._mdeps.on('file', (file, id) => {
+      aliases.set(id, file)
+    })
+    b.pipeline.get('label').unshift(createStream(opts, {
+      getSideEffects(name) {
+        const file = aliases.get(name) || name
+        let pkg
+        let dir = file
+        while (!pkg && (dir = path.dirname(dir))) {
+          pkg = packages.get(dir)
+        }
+        return pkg && pkg.sideEffects === false ? false : true
+      }
+    }))
   }
 }
 
-function createStream (opts) {
+function createStream (opts, api) {
   const analyzer = new Analyzer()
 
   const rows = new Map()
@@ -87,7 +106,9 @@ function createStream (opts) {
     }, (node) => {
       if (node.type === 'Program') ast = node
     })
-    analyzer.run(ast, index)
+    analyzer.run(ast, index, {
+      sideEffects: api.getSideEffects(row.file)
+    })
 
     Object.keys(row.indexDeps).forEach((name) => {
       if (row.indexDeps[name]) {
@@ -124,13 +145,15 @@ function createStream (opts) {
       // If this module was a duplicate of another module,
       // the original module will have been rewritten already.
       if (row.dedupe) {
-        this.push(row)
         return
       }
 
       if (module.bailouts) {
         opts.onModuleBailout(module, module.bailouts)
-        this.push(row)
+        return
+      }
+
+      if (module.getInfo().removeImport) {
         return
       }
 
@@ -141,15 +164,6 @@ function createStream (opts) {
           }
         }
       })
-
-      const transformed = string.toString()
-      if (opts.sourceMap) {
-        row.source = transformed + '\n' + convertSourceMap.fromObject(string.map).toComment()
-      } else {
-        row.source = transformed
-      }
-
-      this.push(row)
 
       // Check if a name was used in this module, or
       // in any of this module's deduped versions.
@@ -165,6 +179,44 @@ function createStream (opts) {
         }
         return false
       }
+    })
+
+    rows.forEach((row, index) => {
+      const module = analyzer.getModule(index)
+      if (module && module.getInfo().removeImport) {
+        return
+      }
+
+      if (row.dedupe || module.bailouts) {
+        this.push(row)
+        return
+      }
+
+      const string = strings.get(index)
+
+      Object.keys(row.indexDeps).forEach((depName) => {
+        const depModule = analyzer.getModule(row.indexDeps[depName])
+        if (depModule && depModule.getInfo().removeImport) {
+          delete row.indexDeps[depName]
+          delete row.deps[depName]
+          const imports = module.requireNodes.get(depName) || []
+          imports.forEach((node) => {
+            // We can replace this with `undefined` because this will not be a .property.
+            // If it was a require('mod').property, the .property would be marked as used,
+            // and the module's import would not be removable
+            node.edit.update(`void 0 ${wrapComment(node.getSource())}`)
+          })
+        }
+      })
+
+      const transformed = string.toString()
+      if (opts.sourceMap) {
+        row.source = transformed + '\n' + convertSourceMap.fromObject(string.map).toComment()
+      } else {
+        row.source = transformed
+      }
+
+      this.push(row)
     })
 
     next()
