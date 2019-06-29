@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.6.1
+* Fix bugs when using `-r` or `b.require('a', { expose: 'b' })`. ([@laduke](https://github.com/laduke) and [@goto-bus-stop](https://github.com/goto-bus-stop) in [#30](https://github.com/browserify/common-shakeify/pull/30))
+
 ## 0.6.0
 * Keep unused properties if `onExportDelete` returns false. ([@RedHatter](https://github.com/RedHatter) in [#26](https://github.com/browserify/common-shakeify/pull/26))
 
