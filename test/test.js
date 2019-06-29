@@ -137,3 +137,27 @@ test('dash-r', function (t) {
     t.end()
   }))
 })
+
+test('dash-r node_modules', function (t) {
+  var b = browserify({
+    entries: path.join(__dirname, 'dash-r-node-modules/app.js')
+  })
+  b.require('net-browserify-stub', { expose: 'net' })
+  b.plugin(commonShake)
+
+  var bundle = b.bundle()
+  bundle.on('error', t.fail)
+
+  bundle.pipe(fs.createWriteStream(
+    path.join(__dirname, 'dash-r-node-modules/actual.js')
+  ))
+
+  bundle.pipe(concat(function (result) {
+    t.is(
+      result.toString('utf8'),
+      fs.readFileSync(path.join(__dirname, 'dash-r-node-modules/expected.js'), 'utf8'),
+      'dash-r'
+    )
+    t.end()
+  }))
+})
