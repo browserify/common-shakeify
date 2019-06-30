@@ -6,8 +6,6 @@ const wrapComment = require('wrap-comment')
 const through = require('through2')
 const convertSourceMap = require('convert-source-map')
 
-const kDuplicates = Symbol('duplicates')
-
 module.exports = function commonShake (b, opts) {
   if (typeof b !== 'object') {
     throw new Error('common-shakeify: must be used as a plugin, not a transform')
@@ -57,6 +55,7 @@ function createStream (opts) {
 
   const rows = new Map()
   const strings = new Map()
+  const duplicates = new Map()
 
   return through.obj(onfile, onend)
 
@@ -227,14 +226,15 @@ function createStream (opts) {
   function commentify (str) {
     return wrapComment(`common-shake removed: ${str}`)
   }
-}
 
-function addDuplicate (row, dupe) {
-  if (!row[kDuplicates]) {
-    row[kDuplicates] = []
+  function addDuplicate (row, dupe) {
+    if (!duplicates.has(row)) {
+      duplicates.set(row, [dupe])
+    } else {
+      duplicates.get(row).push(dupe)
+    }
   }
-  row[kDuplicates].push(dupe)
-}
-function getDuplicates (row) {
-  return row[kDuplicates] || []
+  function getDuplicates (row) {
+    return duplicates.get(row) || []
+  }
 }
