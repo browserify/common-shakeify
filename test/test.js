@@ -175,13 +175,13 @@ test('dash-r node_modules with full paths', { skip: true }, function (t) {
   bundle.on('error', t.fail)
 
   bundle.pipe(fs.createWriteStream(
-    path.join(__dirname, 'dash-r-node-modules/actual.js')
+    path.join(__dirname, 'dash-r-node-modules/actual-fullpaths.js')
   ))
 
   bundle.pipe(concat(function (result) {
     t.is(
       result.toString('utf8'),
-      fs.readFileSync(path.join(__dirname, 'dash-r-node-modules/expected.js'), 'utf8'),
+      fs.readFileSync(path.join(__dirname, 'dash-r-node-modules/expected-fullpaths.js'), 'utf8'),
       'dash-r'
     )
     t.end()
