@@ -42,6 +42,7 @@ module.exports = function commonShake (b, opts) {
   }, opts)
 
   opts.sourceMap = !!b._options.debug
+  opts.fullPaths = !!b._options.fullPaths
 
   addHooks()
   b.on('reset', addHooks)
@@ -60,7 +61,7 @@ function createStream (opts) {
   return through.obj(onfile, onend)
 
   function onfile (row, enc, next) {
-    const index = row.index
+    const index = opts.fullPaths ? row.file : row.index
     let source = row.source
 
     if (row.dedupe) {
@@ -88,9 +89,10 @@ function createStream (opts) {
     })
     analyzer.run(ast, index)
 
-    Object.keys(row.indexDeps).forEach((name) => {
-      if (row.indexDeps[name]) {
-        analyzer.resolve(index, name, row.indexDeps[name])
+    const deps = opts.fullPaths ? row.deps : row.indexDeps
+    Object.keys(deps).forEach((name) => {
+      if (deps[name]) {
+        analyzer.resolve(index, name, deps[name])
       }
     })
 
