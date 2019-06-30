@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.6.2
+* Fix usage with browserify's `fullPaths: true` option. ([#33](https://github.com/browserify/common-shakeify/pull/33))
+
+If you use `fullPaths: true`, the bugfix from 0.6.1 does _not_ apply. If you do not use `fullPaths: true`, the bugfix from 0.6.1 _does_ apply.
+
 ## 0.6.1
 * Fix bugs when using `-r` or `b.require('a', { expose: 'b' })`. ([@laduke](https://github.com/laduke) and [@goto-bus-stop](https://github.com/goto-bus-stop) in [#30](https://github.com/browserify/common-shakeify/pull/30))
 
