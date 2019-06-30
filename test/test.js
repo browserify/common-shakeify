@@ -161,3 +161,29 @@ test('dash-r node_modules', function (t) {
     t.end()
   }))
 })
+
+// TODO fix this one
+test('dash-r node_modules with full paths', { skip: true }, function (t) {
+  var b = browserify({
+    fullPaths: true,
+    entries: path.join(__dirname, 'dash-r-node-modules/app.js')
+  })
+  b.require('net-browserify-stub', { expose: 'net' })
+  b.plugin(commonShake)
+
+  var bundle = b.bundle()
+  bundle.on('error', t.fail)
+
+  bundle.pipe(fs.createWriteStream(
+    path.join(__dirname, 'dash-r-node-modules/actual-fullpaths.js')
+  ))
+
+  bundle.pipe(concat(function (result) {
+    t.is(
+      result.toString('utf8'),
+      fs.readFileSync(path.join(__dirname, 'dash-r-node-modules/expected-fullpaths.js'), 'utf8'),
+      'dash-r'
+    )
+    t.end()
+  }))
+})
