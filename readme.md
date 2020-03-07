@@ -1,6 +1,6 @@
 # common-shakeify
 
-browserify tree shaking plugin using [@indutny](https://github.com/indutny)'s [common-shake](https://github.com/indutny/common-shake)
+browserify tree shaking plugin based on [common-shake](https://github.com/goto-bus-stop/common-shake), the CommonJS tree shaker originally by [@indutny](https://github.com/indutny).
 
 Comments out unused exports from CommonJS modules.
 
