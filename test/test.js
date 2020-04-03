@@ -69,6 +69,9 @@ test('exclude', function (t) {
 test('paren-exports', function (t) {
   runTest(t, 'paren-exports')
 })
+test('side-effects', function (t) {
+  runTest(t, 'side-effects')
+})
 
 test('external', function (t) {
   var b = browserify({

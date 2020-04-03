@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/browserify/common-shakeify#readme",
   "dependencies": {
-    "@goto-bus-stop/common-shake": "^2.2.0",
+    "@goto-bus-stop/common-shake": "^2.3.0",
     "convert-source-map": "^1.5.1",
     "through2": "^2.0.3",
     "transform-ast": "^2.4.3",
