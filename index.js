@@ -82,7 +82,7 @@ function createStream (opts) {
     let ast
     const string = transformAst(source, {
       locations: true,
-      ecmaVersion: 10,
+      ecmaVersion: opts.ecmaVersion !== undefined ? opts.ecmaVersion : 10,
       inputFilename: row.file
     }, (node) => {
       if (node.type === 'Program') ast = node

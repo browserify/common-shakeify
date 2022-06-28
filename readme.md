@@ -95,6 +95,10 @@ Handler called when a module cannot be tree-shaked for some reason.
 Handler called when tree-shaking is skipped entirely, usually because there is a dynamic `require` call in the source.
 `reasons` is an array of reasons for skipping tree-shaking.
 
+### `ecmaVersion`
+
+Parse with this ecmaVersion as interpreted by acorn. (default: 10)
+
 ## License
 
 [MIT](./LICENSE)
