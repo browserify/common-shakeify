@@ -61,8 +61,10 @@ module.exports = function commonShake (b, opts) {
         const file = aliases.get(name) || name
         let pkg
         let dir = file
-        while (!pkg && (dir = path.dirname(dir))) {
+        let prevDir = null
+        while (!pkg && (dir = path.dirname(dir)) && prevDir !== dir) {
           pkg = packages.get(dir)
+          prevDir = dir
         }
         return pkg && pkg.sideEffects === false ? false : true
       }
