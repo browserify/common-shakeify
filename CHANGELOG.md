@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1.1
+* Fixes infinite loop in new side-effect feature. ([#40](https://github.com/browserify/common-shakeify/pull/40))
+
 ## 1.1.0
 * Entirely remove side-effect-free unused modules when they declare `sideEffects: false` in `package.json`. ([#31](https://github.com/browserify/common-shakeify/pull/31))
 
