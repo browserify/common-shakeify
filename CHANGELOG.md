@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.0
+* Expose `opts.ecmaVersion` with a default value of 10. Previously the internal value was 9. ([#39](https://github.com/browserify/common-shakeify/pull/39))
+
 ## 0.6.2
 * Fix usage with browserify's `fullPaths: true` option. ([#33](https://github.com/browserify/common-shakeify/pull/33))
 
