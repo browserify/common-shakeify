@@ -235,20 +235,33 @@ function createStream (opts, api) {
       // Here if `exports.a` is removed we need to make sure the `function(){}` is still
       // an expression, by prepending `void 0,` to result in:
       // `void 0,function(){},exports.b=function(){}`
-      var isPossiblyAmbiguousExpression = node.right.type === 'FunctionExpression' || node.right.type === 'ClassExpression'
-      if (isPossiblyAmbiguousExpression && node.parent.type === 'SequenceExpression' ||
+      // In the case of non-function/class expressions, we can void the whole thing
+      // eg: `exports.a={},exports.b=''`
+      // becomes: `void {},void ''`
+      var isFunction = node.right.type === 'FunctionExpression'
+      var isAssignment = node.right.type === 'AssignmentExpression'
+      var isArrowFunction = node.right.type === 'ArrowFunctionExpression'
+      var isVariableDeclarator = node.parent.parent.type === 'VariableDeclarator'
+      if (
+          // persist sequential variable declarations
+          // eg: `var a = (0, exports.a = function(){})`
+          (!isVariableDeclarator && node.parent.type === 'SequenceExpression') ||
           // without this, `exports.a = exports.b = xyz` eliminating exports.a becomes `void exports.b = xyz`
           // which is invalid.
-          node.right.type === 'AssignmentExpression' ||
+          isAssignment ||
           // Don't output a statement containing only `void () => {}`
-          node.right.type === 'ArrowFunctionExpression') {
+          isArrowFunction
+        ) {
         // ignore alias assignment expression `exports.a = exports.b = exports.c`
         // unless the last argument is noname function
-        var isAliasAssignment = node.right.type === 'AssignmentExpression' && node.right.left.type === 'MemberExpression' && node.right.left.object.name === 'exports'
-        var isFunction = isAliasAssignment && node.right.right.type === 'FunctionExpression'
-        var isClass = isAliasAssignment && node.right.right.type === 'ClassExpression'
-        if (!isAliasAssignment || isFunction || isClass) {
-          prefix += 'void 0, '
+        var isAliasAssignment = isAssignment && node.right.left.type === 'MemberExpression' && node.right.left.object.name === 'exports'
+        var isAliasFunction = isAliasAssignment && node.right.right.type === 'FunctionExpression'
+        var isAliasClass = isAliasAssignment && node.right.right.type === 'ClassExpression'
+        if (!isAliasAssignment || isAliasFunction || isAliasClass) {
+          prefix += 'void '
+          if (isAssignment || isArrowFunction || isFunction || isAliasFunction || isAliasClass) {
+            prefix += '0, '
+          }
         }
       }
       // Make sure we can't accidentally continue a previous statement.
