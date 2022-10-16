@@ -13,4 +13,6 @@ var c = (0, /* common-shake removed: exports.c = */ 'beep boop')
 
 /* common-shake removed: exports.d = */ exports.e = null
 
+/* common-shake removed: exports.f = */ void {},/* common-shake removed: exports.g = */ void 'g',/* common-shake removed: exports.h = */ void 0, () => {},/* common-shake removed: exports.i = */ void 0, function () {}
+
 },{}]},{},[1]);
