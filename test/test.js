@@ -1,5 +1,4 @@
 const test = require('tape')
-const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 const browserify = require('browserify')

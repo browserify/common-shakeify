@@ -1,7 +1,6 @@
 'use strict'
 const path = require('path')
 const Analyzer = require('@goto-bus-stop/common-shake').Analyzer
-const evaluateConst = require('@goto-bus-stop/common-shake').evaluateConst
 const transformAst = require('transform-ast')
 const wrapComment = require('wrap-comment')
 const through = require('through2')
@@ -263,11 +262,12 @@ function createStream (opts, api) {
             prefix += '0, '
           }
         }
-      }
-      // Make sure we can't accidentally continue a previous statement.
-      // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
-      // did not have a semicolon. By putting `void ` in front we force a new statement.
-      else if (node.parent.type === 'ExpressionStatement') {
+      } else if (
+        // Make sure we can't accidentally continue a previous statement.
+        // eg in `exports.a = [0]` the `[0]` could continue a previous statement if that
+        // did not have a semicolon. By putting `void ` in front we force a new statement.
+        node.parent.type === 'ExpressionStatement'
+      ) {
         prefix += 'void '
       }
 
