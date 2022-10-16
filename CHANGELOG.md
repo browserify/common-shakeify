@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.1.2
+* Fix certain cases of exports in sequential expressions resulting in invalid syntax. ([@tornqvist](https://github.com/tornqvist) in [#43](https://github.com/browserify/common-shakeify/pull/43))
+
 ## 1.1.1
 * Fixes infinite loop in new side-effect feature. ([#40](https://github.com/browserify/common-shakeify/pull/40))
 
