@@ -39,7 +39,7 @@
     "babel-core": "^6.26.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babelify": "^8.0.0",
-    "browserify": "^16.1.1",
+    "browserify": "^17.0.0",
     "concat-stream": "^2.0.0",
     "net-browserify-stub": "0.0.1",
     "standard": "^17.0.0",
