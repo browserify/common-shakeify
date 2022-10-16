@@ -1,21 +1,21 @@
-var test = require('tape')
-var assert = require('assert')
-var fs = require('fs')
-var path = require('path')
-var browserify = require('browserify')
-var concat = require('concat-stream')
-var commonShake = require('../')
+const test = require('tape')
+const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
+const browserify = require('browserify')
+const concat = require('concat-stream')
+const commonShake = require('../')
 
 function runTest (t, name) {
   t.plan(1)
-  var basedir = path.join(__dirname, name)
-  var optionsPath = path.join(basedir, 'options.js')
-  var options = {}
+  const basedir = path.join(__dirname, name)
+  const optionsPath = path.join(basedir, 'options.js')
+  let options = {}
   try { options = require(optionsPath)(t) } catch (err) {}
-  var entry = path.join(basedir, 'app.js')
-  var expected = path.join(basedir, 'expected.js')
-  var actual = path.join(basedir, 'actual.js')
-  var bundle = browserify({ entries: entry })
+  const entry = path.join(basedir, 'app.js')
+  const expected = path.join(basedir, 'expected.js')
+  const actual = path.join(basedir, 'actual.js')
+  const bundle = browserify({ entries: entry })
     .plugin(commonShake, options)
     .bundle()
     .on('error', t.fail)
@@ -74,7 +74,7 @@ test('side-effects', function (t) {
 })
 
 test('external', function (t) {
-  var b = browserify({
+  const b = browserify({
     entries: path.join(__dirname, 'external/app.js')
   })
 
@@ -87,7 +87,7 @@ test('external', function (t) {
 })
 
 test('source maps', function (t) {
-  var b = browserify({
+  const b = browserify({
     entries: path.join(__dirname, 'source-map/app.js'),
     debug: true,
     preludePath: 'node_modules/browser-pack/_prelude.js'
@@ -99,7 +99,7 @@ test('source maps', function (t) {
   })
   b.plugin(commonShake)
 
-  var bundle = b.bundle()
+  const bundle = b.bundle()
   bundle.on('error', t.fail)
 
   // Write actual output to a file for easier inspection
@@ -118,13 +118,13 @@ test('source maps', function (t) {
 })
 
 test('dash-r', function (t) {
-  var b = browserify({
+  const b = browserify({
     entries: path.join(__dirname, 'dash-r/app.js')
   })
   b.require(path.join(__dirname, 'dash-r/expose.js'), { expose: 'whatever' })
   b.plugin(commonShake)
 
-  var bundle = b.bundle()
+  const bundle = b.bundle()
   bundle.on('error', t.fail)
 
   bundle.pipe(fs.createWriteStream(
@@ -142,13 +142,13 @@ test('dash-r', function (t) {
 })
 
 test('dash-r node_modules', function (t) {
-  var b = browserify({
+  const b = browserify({
     entries: path.join(__dirname, 'dash-r-node-modules/app.js')
   })
   b.require('net-browserify-stub', { expose: 'net' })
   b.plugin(commonShake)
 
-  var bundle = b.bundle()
+  const bundle = b.bundle()
   bundle.on('error', t.fail)
 
   bundle.pipe(fs.createWriteStream(
@@ -167,14 +167,14 @@ test('dash-r node_modules', function (t) {
 
 // TODO fix this one
 test('dash-r node_modules with full paths', { skip: true }, function (t) {
-  var b = browserify({
+  const b = browserify({
     fullPaths: true,
     entries: path.join(__dirname, 'dash-r-node-modules/app.js')
   })
   b.require('net-browserify-stub', { expose: 'net' })
   b.plugin(commonShake)
 
-  var bundle = b.bundle()
+  const bundle = b.bundle()
   bundle.on('error', t.fail)
 
   bundle.pipe(fs.createWriteStream(

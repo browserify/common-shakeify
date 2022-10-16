@@ -4,7 +4,9 @@
   "description": "browserify tree shaking plugin using @indutny common-shake",
   "main": "index.js",
   "scripts": {
-    "test": "tape test/test.js"
+    "lint": "standard",
+    "tests-only": "tape test/test.js",
+    "test": "npm run lint && npm run tests-only"
   },
   "repository": {
     "type": "git",
@@ -40,7 +42,14 @@
     "browserify": "^16.1.1",
     "concat-stream": "^1.6.1",
     "net-browserify-stub": "0.0.1",
+    "standard": "^17.0.0",
     "tape": "^4.9.0",
     "uglify-js": "^3.3.15"
+  },
+  "standard": {
+    "ignore": [
+      "test/*/*.js",
+      "example/bundle.*"
+    ]
   }
 }

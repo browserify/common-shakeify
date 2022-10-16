@@ -1,4 +1,4 @@
-var target = exports.target = 'world'
+let target = exports.target = 'world'
 exports.getMessage = function () {
   return 'hello ' + target
 }

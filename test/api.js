@@ -1,9 +1,9 @@
-var test = require('tape')
-var path = require('path')
-var browserify = require('browserify')
-var commonShakeify = require('../')
+const test = require('tape')
+const path = require('path')
+const browserify = require('browserify')
+const commonShakeify = require('../')
 
-var sampleEntry = path.join(__dirname, 'simple/app.js')
+const sampleEntry = path.join(__dirname, 'simple/app.js')
 
 test('should work as a plugin', function (t) {
   try {

@@ -57,7 +57,7 @@ module.exports = function commonShake (b, opts) {
       aliases.set(id, file)
     })
     b.pipeline.get('label').unshift(createStream(opts, {
-      getSideEffects(name) {
+      getSideEffects (name) {
         const file = aliases.get(name) || name
         let pkg
         let dir = file
@@ -66,7 +66,7 @@ module.exports = function commonShake (b, opts) {
           pkg = packages.get(dir)
           prevDir = dir
         }
-        return pkg && pkg.sideEffects === false ? false : true
+        return !(pkg && pkg.sideEffects === false)
       }
     }))
   }
@@ -227,7 +227,7 @@ function createStream (opts, api) {
 
   function remove (string, node) {
     if (node.type === 'AssignmentExpression') {
-      var prefix = commentify(`${node.left.getSource()} =`) + ' '
+      let prefix = commentify(`${node.left.getSource()} =`) + ' '
       // Anonymous function and class expressions are parsed as statements if they
       // are the first thing in a statement, which can happen if the `exports.xyz`
       // assignment happened inside a SequenceExpression (usually after minification).
@@ -238,25 +238,25 @@ function createStream (opts, api) {
       // In the case of non-function/class expressions, we can void the whole thing
       // eg: `exports.a={},exports.b=''`
       // becomes: `void {},void ''`
-      var isFunction = node.right.type === 'FunctionExpression'
-      var isAssignment = node.right.type === 'AssignmentExpression'
-      var isArrowFunction = node.right.type === 'ArrowFunctionExpression'
-      var isVariableDeclarator = node.parent.parent.type === 'VariableDeclarator'
+      const isFunction = node.right.type === 'FunctionExpression'
+      const isAssignment = node.right.type === 'AssignmentExpression'
+      const isArrowFunction = node.right.type === 'ArrowFunctionExpression'
+      const isVariableDeclarator = node.parent.parent.type === 'VariableDeclarator'
       if (
-          // persist sequential variable declarations
-          // eg: `var a = (0, exports.a = function(){})`
-          (!isVariableDeclarator && node.parent.type === 'SequenceExpression') ||
+      // persist sequential variable declarations
+      // eg: `var a = (0, exports.a = function(){})`
+        (!isVariableDeclarator && node.parent.type === 'SequenceExpression') ||
           // without this, `exports.a = exports.b = xyz` eliminating exports.a becomes `void exports.b = xyz`
           // which is invalid.
           isAssignment ||
           // Don't output a statement containing only `void () => {}`
           isArrowFunction
-        ) {
+      ) {
         // ignore alias assignment expression `exports.a = exports.b = exports.c`
         // unless the last argument is noname function
-        var isAliasAssignment = isAssignment && node.right.left.type === 'MemberExpression' && node.right.left.object.name === 'exports'
-        var isAliasFunction = isAliasAssignment && node.right.right.type === 'FunctionExpression'
-        var isAliasClass = isAliasAssignment && node.right.right.type === 'ClassExpression'
+        const isAliasAssignment = isAssignment && node.right.left.type === 'MemberExpression' && node.right.left.object.name === 'exports'
+        const isAliasFunction = isAliasAssignment && node.right.right.type === 'FunctionExpression'
+        const isAliasClass = isAliasAssignment && node.right.right.type === 'ClassExpression'
         if (!isAliasAssignment || isAliasFunction || isAliasClass) {
           prefix += 'void '
           if (isAssignment || isArrowFunction || isFunction || isAliasFunction || isAliasClass) {

@@ -1,2 +1,2 @@
-var message = require('./xyz').getMessage()
+const message = require('./xyz').getMessage()
 console.log(message)

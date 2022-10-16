@@ -1,19 +1,19 @@
-var path = require('path')
-var browserify = require('browserify')
-var commonShake = require('../')
+const path = require('path')
+const browserify = require('browserify')
+const commonShake = require('../')
 
-var b = browserify({ entries: path.join(__dirname, 'app.js') })
+const b = browserify({ entries: path.join(__dirname, 'app.js') })
   .plugin(commonShake, {
     verbose: true
   })
   .bundle()
 
 // Minify & save
-var fs = require('fs')
-var concat = require('concat-stream')
-var uglify = require('uglify-js')
+const fs = require('fs')
+const concat = require('concat-stream')
+const uglify = require('uglify-js')
 b.pipe(concat(function (source) {
-  var minified = uglify.minify(source.toString('utf8'), {
+  const minified = uglify.minify(source.toString('utf8'), {
     mangle: false,
     compress: true
   })
