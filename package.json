@@ -31,7 +31,7 @@
   "dependencies": {
     "@goto-bus-stop/common-shake": "^2.3.0",
     "convert-source-map": "^2.0.0",
-    "through2": "^2.0.3",
+    "through2": "^4.0.2",
     "transform-ast": "^2.4.3",
     "wrap-comment": "^1.0.1"
   },
